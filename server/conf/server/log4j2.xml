@@ -12,18 +12,14 @@
         </Console>
 
         <RollingFile name="CatchAllAppender" filename="logs/default.log" immediateFlush="false" append="true">
-            <filepattern>logs/default.%d{YYYYMMdd_HH:mm:ss}.log.gz</filepattern>
+            <filepattern>logs/default.%d{yyyyMMdd_HH:mm:ss}.log.gz</filepattern>
             <PatternLayout pattern="${logPattern}"/>
+            <!-- A new file at each start and each midnight; rolled files are kept, never deleted. -->
             <Policies>
-                <!-- TimeBasedTriggeringPolicy interval is based off of the filepattern timestamp, using the finest-grain time interval defined in the filepattern timestamp. For example: %d{YYYYMMdd_HH：mm：ss} uses seconds which means interval 86400 for 1 day. -->
-                <TimeBasedTriggeringPolicy interval="86400" modulate="true"/>
+                <OnStartupTriggeringPolicy/>
+                <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
             </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="logs" maxDepth="1">
-                    <IfFileName glob="*.log.gz"/>
-                    <IfLastModified age="P7D"/>
-                </Delete>
-            </DefaultRolloverStrategy>
+            <DefaultRolloverStrategy/>
         </RollingFile>
 
         <Routing name="RoutingAppender">
@@ -32,18 +28,14 @@
                     <RollingFile name="Rolling-${ctx:world.name}_${ctx:world.number}"
                                  filename="logs/${ctx:world.name}_${ctx:world.number}.log"
                                  append="true">
-                        <filepattern>logs/${ctx:world.name}_${ctx:world.number}.%d{YYYYMMdd}.log.gz</filepattern>
+                        <filepattern>logs/${ctx:world.name}_${ctx:world.number}.%d{yyyyMMdd_HH:mm:ss}.log.gz</filepattern>
                         <PatternLayout pattern="${logPattern}"/>
+                        <!-- A new file at each start and each midnight; rolled files are kept, never deleted. -->
                         <Policies>
-                            <!-- TimeBasedTriggeringPolicy interval is based off of the filepattern timestamp, using the finest-grain time interval defined in the filepattern timestamp. For example: %d{YYYYMMdd} uses days which means interval 1 for 1 day. -->
-                            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                            <OnStartupTriggeringPolicy/>
+                            <CronTriggeringPolicy schedule="0 0 0 * * ?"/>
                         </Policies>
-                        <DefaultRolloverStrategy>
-                            <Delete basePath="logs" maxDepth="1">
-                                <IfFileName glob="*.log.gz"/>
-                                <IfLastModified age="P7D"/>
-                            </Delete>
-                        </DefaultRolloverStrategy>
+                        <DefaultRolloverStrategy/>
                     </RollingFile>
                 </Route>
                 <Route ref="CatchAllAppender" key="${ctx:world.name}"/>
